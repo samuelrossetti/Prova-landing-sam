@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Samuel Rossetti — Digital Marketer"
+version = "1.0.0"
+id = "artifacts/samuel-rossetti"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19522
+
+[services.development]
+run = "pnpm --filter @workspace/samuel-rossetti run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/samuel-rossetti", "run", "build" ]
+publicDir = "artifacts/samuel-rossetti/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19522"
+BASE_PATH = "/"
