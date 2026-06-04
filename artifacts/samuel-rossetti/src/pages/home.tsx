@@ -1,9 +1,7 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowRight,
   BarChart2,
-  CheckCircle2,
   LineChart,
   Lock,
   MessageCircle,
@@ -13,6 +11,7 @@ import {
   Star,
   Target,
   TrendingUp,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +28,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+
+const YOUTUBE_ID = "BuTdYSbypak";
+const THUMB_URL = `https://img.youtube.com/vi/${YOUTUBE_ID}/hqdefault.jpg`;
+const EMBED_URL = `https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1&rel=0`;
 
 // --- ANIMATION VARIANTS ---
 const fadeUp = {
@@ -65,6 +68,7 @@ export default function Home() {
   const { toast } = useToast();
   const contactRef = useRef<HTMLElement>(null);
   const [videoUnlocked, setVideoUnlocked] = useState(false);
+  const [showLeadForm, setShowLeadForm] = useState(false);
 
   const scrollToContact = () => {
     contactRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -83,6 +87,7 @@ export default function Home() {
   function onLeadSubmit(values: z.infer<typeof leadSchema>) {
     console.log("Lead captured:", values);
     setVideoUnlocked(true);
+    setShowLeadForm(false);
     toast({
       title: "Video sbloccato!",
       description: "Guarda ora il caso studio di Federico.",
@@ -107,9 +112,6 @@ export default function Home() {
             Samuel Rossetti<span className="text-primary">.</span>
           </div>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-muted-foreground">
-            <a href="#caso-studio" className="hover:text-foreground transition-colors">
-              Caso Studio
-            </a>
             <a href="#come-funziona" className="hover:text-foreground transition-colors">
               Come Funziona
             </a>
@@ -129,232 +131,219 @@ export default function Home() {
 
       <main className="flex-grow pt-16">
         {/* HERO SECTION */}
-        <section className="relative pt-20 pb-16 overflow-hidden">
+        <section className="relative pt-16 pb-20 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-background to-background -z-10"></div>
 
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <motion.div initial="hidden" animate="visible" variants={fadeUp}>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                  </span>
-                  Accetto 2 nuovi clienti questo mese
-                </div>
-                <h1 className="text-4xl md:text-6xl font-bold font-serif text-foreground leading-[1.1] mb-6 tracking-tight">
+              <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
+
+                {/* BADGE */}
+                <motion.div variants={fadeUp}>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                    </span>
+                    Accetto 2 nuovi clienti questo mese
+                  </div>
+                </motion.div>
+
+                {/* HEADLINE */}
+                <motion.h1
+                  variants={fadeUp}
+                  className="text-4xl md:text-6xl font-bold font-serif text-foreground leading-[1.1] mb-3 tracking-tight"
+                >
                   Ecco come Federico ha{" "}
                   <span className="text-primary italic">aumentato il fatturato</span>{" "}
                   grazie al metodo a 4 step del{" "}
                   <span className="text-primary">Codice del Fatturato</span>
-                </h1>
-                <p className="text-lg md:text-xl text-muted-foreground mb-4 max-w-2xl mx-auto leading-relaxed">
-                  Aiuto attività locali e liberi professionisti a costruire un sistema
-                  prevedibile per acquisire nuovi clienti ogni mese.
-                </p>
-                <p className="text-base font-semibold text-primary mb-10 tracking-wide uppercase">
+                </motion.h1>
+
+                <motion.p
+                  variants={fadeUp}
+                  className="text-base font-semibold text-primary mb-8 tracking-wide uppercase"
+                >
                   Guarda il caso studio gratuito
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto text-base h-14 px-8"
-                    onClick={() => {
-                      document
-                        .getElementById("caso-studio")
-                        ?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                    data-testid="button-hero-cta"
-                  >
-                    Scopri il caso studio
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </div>
+                </motion.p>
+
+                {/* VIDEO BLOCK */}
+                <motion.div variants={fadeUp} className="mb-8">
+                  <div className="relative rounded-2xl overflow-hidden border border-border shadow-2xl bg-black max-w-3xl mx-auto">
+
+                    {/* THUMBNAIL / EMBED */}
+                    <div className="relative aspect-video">
+                      {videoUnlocked ? (
+                        /* UNLOCKED — YouTube embed */
+                        <iframe
+                          src={EMBED_URL}
+                          title="Caso Studio Federico — Codice del Fatturato"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="w-full h-full"
+                          data-testid="video-case-study"
+                        />
+                      ) : (
+                        /* LOCKED — thumbnail with overlay */
+                        <button
+                          onClick={() => setShowLeadForm(true)}
+                          className="relative w-full h-full group cursor-pointer focus:outline-none block"
+                          data-testid="button-open-lead-form"
+                          aria-label="Sblocca il caso studio"
+                        >
+                          {/* YouTube thumbnail */}
+                          <img
+                            src={THUMB_URL}
+                            alt="Caso studio Federico"
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Dark overlay */}
+                          <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors duration-200" />
+                          {/* Lock + play pill */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2.5">
+                              <Lock className="h-4 w-4 text-white" />
+                              <span className="text-white text-sm font-semibold">
+                                Lascia i tuoi dati per guardare
+                              </span>
+                            </div>
+                            <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                              <Play className="h-7 w-7 text-white fill-white ml-1" />
+                            </div>
+                          </div>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* LEAD CAPTURE FORM — inline below video */}
+                    <AnimatePresence>
+                      {showLeadForm && !videoUnlocked && (
+                        <motion.div
+                          key="lead-form"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.35, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <div className="p-6 md:p-8 bg-card border-t border-border">
+                            <div className="flex items-center justify-between mb-4">
+                              <p className="text-foreground font-semibold text-base">
+                                Inserisci i tuoi dati per guardare il caso studio
+                              </p>
+                              <button
+                                onClick={() => setShowLeadForm(false)}
+                                className="text-muted-foreground hover:text-foreground transition-colors"
+                                data-testid="button-close-lead-form"
+                                aria-label="Chiudi"
+                              >
+                                <X className="h-5 w-5" />
+                              </button>
+                            </div>
+                            <Form {...leadForm}>
+                              <form
+                                onSubmit={leadForm.handleSubmit(onLeadSubmit)}
+                                className="grid md:grid-cols-3 gap-4"
+                              >
+                                <FormField
+                                  control={leadForm.control}
+                                  name="name"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Nome</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          placeholder="Es. Mario Rossi"
+                                          {...field}
+                                          data-testid="input-lead-name"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={leadForm.control}
+                                  name="phone"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Telefono</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          placeholder="+39 345 123 4567"
+                                          type="tel"
+                                          {...field}
+                                          data-testid="input-lead-phone"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={leadForm.control}
+                                  name="email"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Email</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          placeholder="mario@esempio.it"
+                                          type="email"
+                                          {...field}
+                                          data-testid="input-lead-email"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <div className="md:col-span-3">
+                                  <Button
+                                    type="submit"
+                                    className="w-full h-11 text-base font-semibold"
+                                    data-testid="button-unlock-video"
+                                  >
+                                    <Play className="mr-2 h-4 w-4" />
+                                    Guarda il caso studio gratuito
+                                  </Button>
+                                  <p className="text-center text-xs text-muted-foreground mt-2">
+                                    Nessuno spam. Puoi disiscriverti in qualsiasi momento.
+                                  </p>
+                                </div>
+                              </form>
+                            </Form>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+
+                {/* CTA BUTTON */}
+                {!videoUnlocked && (
+                  <motion.div variants={fadeUp}>
+                    <Button
+                      size="lg"
+                      className="w-full sm:w-auto text-base h-14 px-10"
+                      onClick={() => setShowLeadForm(true)}
+                      data-testid="button-hero-cta"
+                    >
+                      <Play className="mr-2 h-5 w-5" />
+                      Guarda il caso studio
+                    </Button>
+                    <p className="text-sm text-muted-foreground mt-3">
+                      100% gratuito — nessun impegno
+                    </p>
+                  </motion.div>
+                )}
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* VIDEO CASE STUDY — GATED */}
-        <section id="caso-studio" className="py-20 bg-card border-y border-border">
-          <div className="container mx-auto px-4">
-            <motion.div
-              className="max-w-5xl mx-auto"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-            >
-              <div className="text-center mb-10">
-                <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-3">
-                  Il Caso Studio di Federico
-                </h2>
-                <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-                  Da zero nuovi contatti online a un sistema che genera clienti ogni settimana.
-                  Guarda come ci siamo riusciti.
-                </p>
-              </div>
-
-              <div className="relative rounded-2xl overflow-hidden border border-border shadow-xl bg-background">
-                {/* VIDEO PLACEHOLDER */}
-                <div className="relative aspect-video bg-foreground/5">
-                  {/* Blurred thumbnail overlay when locked */}
-                  <div
-                    className={`absolute inset-0 bg-cover bg-center transition-all duration-500 ${
-                      videoUnlocked ? "" : "blur-sm scale-105"
-                    }`}
-                    style={{
-                      background:
-                        "linear-gradient(135deg, hsl(var(--primary)/0.15) 0%, hsl(var(--muted)/0.4) 100%)",
-                    }}
-                  />
-
-                  {/* Fake video frame lines */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {videoUnlocked ? (
-                      <div className="w-full h-full flex items-center justify-center bg-black">
-                        <div className="text-center text-white">
-                          <Play className="h-16 w-16 mx-auto mb-4 opacity-60" />
-                          <p className="text-lg font-medium opacity-70">
-                            Caso Studio — Federico & il Codice del Fatturato
-                          </p>
-                          <p className="text-sm opacity-50 mt-2">
-                            Sostituisci questo segnaposto con il link al video reale
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center px-6">
-                        <div className="w-20 h-20 rounded-full bg-primary/20 backdrop-blur flex items-center justify-center mx-auto mb-4 border border-primary/30">
-                          <Lock className="h-8 w-8 text-primary" />
-                        </div>
-                        <p className="text-foreground font-bold text-xl mb-1">
-                          Video riservato
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                          Lascia i tuoi contatti per sbloccare il caso studio gratuito
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* LEAD CAPTURE GATE */}
-                <AnimatePresence>
-                  {!videoUnlocked && (
-                    <motion.div
-                      key="lead-form"
-                      initial={{ opacity: 1 }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="p-8 md:p-10 border-t border-border"
-                    >
-                      <div className="max-w-2xl mx-auto">
-                        <p className="text-center text-foreground font-semibold mb-6 text-lg">
-                          Inserisci i tuoi dati per accedere gratuitamente al caso studio
-                        </p>
-                        <Form {...leadForm}>
-                          <form
-                            onSubmit={leadForm.handleSubmit(onLeadSubmit)}
-                            className="grid md:grid-cols-3 gap-4"
-                          >
-                            <FormField
-                              control={leadForm.control}
-                              name="name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Nome</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Es. Mario Rossi"
-                                      {...field}
-                                      data-testid="input-lead-name"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={leadForm.control}
-                              name="phone"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Telefono</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Es. +39 345 123 4567"
-                                      type="tel"
-                                      {...field}
-                                      data-testid="input-lead-phone"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={leadForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="mario@esempio.it"
-                                      type="email"
-                                      {...field}
-                                      data-testid="input-lead-email"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <div className="md:col-span-3">
-                              <Button
-                                type="submit"
-                                className="w-full h-12 text-base font-semibold"
-                                data-testid="button-unlock-video"
-                              >
-                                <Play className="mr-2 h-5 w-5" />
-                                Sblocca il caso studio gratuito
-                              </Button>
-                              <p className="text-center text-xs text-muted-foreground mt-3">
-                                Nessuno spam. Puoi disiscriverti in qualsiasi momento.
-                              </p>
-                            </div>
-                          </form>
-                        </Form>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* SUCCESS STATE AFTER UNLOCK */}
-                <AnimatePresence>
-                  {videoUnlocked && (
-                    <motion.div
-                      key="unlocked"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5 }}
-                      className="p-6 border-t border-border bg-primary/5 text-center"
-                    >
-                      <div className="flex items-center justify-center gap-2 text-primary font-semibold">
-                        <CheckCircle2 className="h-5 w-5" />
-                        Caso studio sbloccato — buona visione!
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
         {/* SOCIAL PROOF */}
-        <section className="py-12 border-b border-border bg-background">
+        <section className="py-12 border-y border-border bg-card">
           <div className="container mx-auto px-4">
             <motion.div
               className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
@@ -369,7 +358,7 @@ export default function Home() {
                 { number: "4.9/5", label: "Media Recensioni" },
                 { number: "100%", label: "Focus sui Risultati" },
               ].map((stat, i) => (
-                <motion.div key={i} variants={fadeUp} className="flex flex-col items-center justify-center">
+                <motion.div key={i} variants={fadeUp} className="flex flex-col items-center">
                   <div className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-2">
                     {stat.number}
                   </div>
@@ -421,7 +410,7 @@ export default function Home() {
                 {
                   icon: BarChart2,
                   title: "4. Monitoraggio delle KPI",
-                  desc: "Teniamo sotto controllo i dati chiave: costo per lead, tasso di conversione, ritorno sull'investimento. Nessuna sorpresa.",
+                  desc: "Teniamo sotto controllo i dati chiave: costo per lead, tasso di conversione, ritorno sull'investimento.",
                 },
                 {
                   icon: LineChart,
@@ -485,7 +474,7 @@ export default function Home() {
                 <motion.div
                   key={i}
                   variants={fadeUp}
-                  className="bg-background p-8 rounded-2xl border border-border relative"
+                  className="bg-background p-8 rounded-2xl border border-border"
                 >
                   <div className="flex gap-1 mb-4 text-amber-400">
                     {[...Array(5)].map((_, j) => (
