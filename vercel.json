@@ -1,6 +1,9 @@
 {
-  "buildCommand": "pnpm --filter @workspace/samuel-rossetti run build",
+  "buildCommand": "pnpm install && pnpm --filter @workspace/samuel-rossetti run build",
   "outputDirectory": "artifacts/samuel-rossetti/dist",
-  "installCommand": "pnpm install",
-  "framework": null
+  "installCommand": "echo 'install handled in buildCommand'",
+  "framework": null,
+  "env": {
+    "BASE_PATH": "/"
+  }
 }
