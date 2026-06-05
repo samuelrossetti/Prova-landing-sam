@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm --filter @workspace/samuel-rossetti run build",
+  "outputDirectory": "artifacts/samuel-rossetti/dist/public",
+  "installCommand": "pnpm install",
+  "framework": null
+}
