@@ -84,23 +84,39 @@ export default function Home() {
     defaultValues: { name: "", email: "", message: "" },
   });
 
-  function onLeadSubmit(values: z.infer<typeof leadSchema>) {
-    console.log("Lead captured:", values);
+  async function onLeadSubmit(values: z.infer<typeof leadSchema>) {
     setVideoUnlocked(true);
     setShowLeadForm(false);
     toast({
       title: "Video sbloccato!",
       description: "Guarda ora il caso studio di Federico.",
     });
+    try {
+      await fetch(`${import.meta.env.BASE_URL}api/email/lead`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+    } catch {
+      // invio email silenzioso — non bloccare l'utente
+    }
   }
 
-  function onContactSubmit(values: z.infer<typeof contactSchema>) {
-    console.log(values);
+  async function onContactSubmit(values: z.infer<typeof contactSchema>) {
     toast({
       title: "Richiesta inviata con successo!",
       description: "Ti ricontatterò entro 24 ore.",
     });
     contactForm.reset();
+    try {
+      await fetch(`${import.meta.env.BASE_URL}api/email/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+    } catch {
+      // invio email silenzioso — non bloccare l'utente
+    }
   }
 
   return (
@@ -199,14 +215,8 @@ export default function Home() {
                           />
                           {/* Dark overlay */}
                           <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors duration-200" />
-                          {/* Lock + play pill */}
+                          {/* Play button only */}
                           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2.5">
-                              <Lock className="h-4 w-4 text-white" />
-                              <span className="text-white text-sm font-semibold">
-                                Lascia i tuoi dati per guardare
-                              </span>
-                            </div>
                             <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
                               <Play className="h-7 w-7 text-white fill-white ml-1" />
                             </div>
@@ -602,7 +612,7 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="bg-background py-12 border-t border-border">
-        <div className="container mx-auto px-4 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
           <div>
             <div className="font-serif text-xl font-bold text-foreground mb-2">
               Samuel Rossetti<span className="text-primary">.</span>
@@ -611,10 +621,16 @@ export default function Home() {
               Esperto in acquisizione clienti in Italia.
             </p>
           </div>
-          <div className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Samuel Rossetti. Tutti i diritti riservati.
-            <br />
-            P.IVA 12345678901
+          <div className="text-sm text-muted-foreground space-y-1 text-center">
+            <p>&copy; {new Date().getFullYear()} Samuel Rossetti. Tutti i diritti riservati.</p>
+            <p>P.IVA 12345678901</p>
+            <a
+              href="/privacy"
+              className="text-primary hover:underline underline-offset-4"
+              data-testid="link-privacy-policy"
+            >
+              Privacy & Cookie Policy
+            </a>
           </div>
         </div>
       </footer>
